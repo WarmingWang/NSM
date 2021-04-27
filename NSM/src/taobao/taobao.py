@@ -95,16 +95,35 @@ class TaoBao:
         url = "https://detail.tmall.com/item.htm?id=" + productId
         self.browser.get(url)
         time.sleep(2)
+
+        # 点击颜色分类小图，加载图片
+        items = self.browser.find_elements_by_xpath('//*[@id="J_DetailMeta"]/div[1]/div[1]/div/div[4]/div/div/dl[1]/dd/ul/li')
+        for item in items:
+            item.click()
+            time.sleep(1)
+
         # 滚动条操作
         new_height = self.browser.execute_script("return document.body.scrollHeight;")
         for i in range(math.ceil(new_height/500)):
             self.browser.execute_script('window.scrollTo(0, '+str(500*(i+1))+')')
             time.sleep(1)
 
-        items = self.browser.find_elements_by_xpath('//*[@id="description"]/div/p/img')
-        for idx, item in enumerate(items):
+        idx = 0
+        items = self.browser.find_elements_by_xpath('/html/body/div/img')
+        for item in items:
             pic = item.get_attribute("src")
-            utils.saveImg(pic, self.fileCWD + '\\pic\\' + productId, str(idx) + '.jpg')
+            if "430x430q90" in pic:
+                continue
+            idx += 1
+            utils.saveImg(pic, self.fileCWD + '\\pic\\' + productId, 'a'+str(idx) + '.jpg')
+            print(pic)
+
+        idx = 0
+        items = self.browser.find_elements_by_xpath('//*[@id="description"]/div/p/img')
+        for item in items:
+            pic = item.get_attribute("src")
+            idx += 1
+            utils.saveImg(pic, self.fileCWD + '\\pic\\' + productId, 'b'+str(idx) + '.jpg')
             print(pic)
 
 
